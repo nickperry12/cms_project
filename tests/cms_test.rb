@@ -30,17 +30,39 @@ class CMSTest < Minitest::Test
     
     get "/history.txt"
     assert_equal(200, last_response.status)
-    assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
+    assert_equal("text/plain", last_response["Content-Type"])
     assert_includes(last_response.body, history_content)
 
     get "/about.txt"
     assert_equal(200, last_response.status)
-    assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
+    assert_equal("text/plain", last_response["Content-Type"])
     assert_includes(last_response.body, about_content)
 
     get "/changes.txt"
     assert_equal(200, last_response.status)
-    assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
+    assert_equal("text/plain", last_response["Content-Type"])
     assert_includes(last_response.body, changes_content)
+  end
+
+  def test_document_not_found
+    filename = "notafile.txt"
+    error_message = "#{filename} does not exist."
+    get "/#{filename}"
+    assert_equal(302, last_response.status)
+
+    get last_response["Location"]
+    assert_equal(200, last_response.status)
+    assert_includes(last_response.body, error_message)
+
+    get "/"
+    assert_equal(200, last_response.status)
+    refute_includes(last_response.body, error_message)
+  end
+
+  def test_markdown_content
+    get "/brady.md"
+    assert_equal(200, last_response.status)
+    assert_equal("text/html;charset=utf-8", last_response["Content-Type"])
+    assert_includes(last_response.body, "<h1>Tom Brady...</h1>")
   end
 end

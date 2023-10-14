@@ -6,6 +6,7 @@ gem "erubis"
 gem "webrick"
 gem "rack-test"
 gem "minitest-reporters"
+gem "redcarpet"
 
 ruby "3.2.2"
 

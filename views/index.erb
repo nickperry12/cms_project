@@ -1,5 +1,36 @@
-<ul>
-  <% @files.each do |file| %>
-    <a href="/<%= file %>"><li><%= file %></li></a>
+<% if session[:signed_in] %>
+  <p class="welcome">Welcome!</p>
+<% end %>
+<% if session[:sign_out] %>
+  <p class="signout"><%= session.delete(:sign_out) %></p>
+<% end %>
+<table>
+  <% @files.each_with_index do |file, idx| %>
+    <tr>
+      <td class="file"><a href="/<%= file %>"><%= idx += 1 %>. <%= file %></td>
+      <td><a href="/<%= file %>/edit">Edit</a></td>
+      <td>
+        <form action="/<%= file %>/delete" method="post">
+          <button type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
   <% end %>
-</ul>
+</table>
+<div class="button">
+  <button class="new_doc">
+    <a href="/new">New Document</a>
+  </button>
+</div>  
+
+<% if session[:signed_in] %>
+  <p class="sign-in"><em><%= session[:signed_in] %></em>
+    <button>
+      <a href="/users/sign_out">Sign Out</a>
+    </button>
+  </p>
+<% else%>
+  <button>
+    <a href="/users/sign_in">Sign In</a>
+  </button>
+<% end %>

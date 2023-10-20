@@ -1,0 +1,16 @@
+<% if session[:invalid_credentials] %>
+  <p class="invalid"><%= session.delete(:invalid_credentials) %></p>
+<% end %>
+<form action="/users/sign_in" method="post">
+  <div>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" placeholder="username" value="<%= params[:username] %>">
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+  </div>
+  <div>
+    <button type="submit">Sign In</button>
+  </div>
+</form>

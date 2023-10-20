@@ -1,0 +1,3 @@
+Name: Nick
+Wins: 20
+Losses: 0

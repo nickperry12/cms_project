@@ -33,6 +33,10 @@ class CMSTest < Minitest::Test
     last_request.env["rack.session"]
   end
 
+  def admin_session
+    { "rack.session" => {username: "nperry"} }
+  end
+
   def test_index
     create_document("changes.txt")
     create_document("about.txt")
@@ -104,7 +108,7 @@ class CMSTest < Minitest::Test
   end
 
   def test_create_document
-    get "/new"
+    get "/new", {}, admin_session
     assert_equal(200, last_response.status)
     assert_includes(last_response.body, "<input")
     assert_includes(last_response.body, %q(<button class="create" type="submit"))
@@ -125,10 +129,11 @@ class CMSTest < Minitest::Test
     file_name = "new_doc.txt"
     file_path = File.join(data_path, file_name)
 
-    post "/#{file_name}/delete"
+    post "/#{file_name}/delete", {}, admin_session
     
     assert_equal(302, last_response.status)
     assert_equal("new_doc.txt was deleted.", session[:success])
+    
     get "/"
 
     assert_equal(200, last_response.status)

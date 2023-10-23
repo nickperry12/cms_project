@@ -3,6 +3,17 @@ require 'sinatra/reloader' if development?
 require 'sinatra/content_for'
 require 'tilt/erubis'
 require 'redcarpet'
+require 'yaml'
+
+# loads the list of valid users
+def load_users
+  users_path = if ENV["RACK_ENV"] == "test"
+    File.expand_path("./tests/users.yml")
+  else
+    File.expand_path("./public/users.yml")
+  end
+  YAML.load_file(users_path)
+end
 
 # renders the content of a markdown file
 def render_markdown(text)
@@ -25,9 +36,9 @@ end
 
 def data_path
   if ENV["RACK_ENV"] == "test"
-    File.expand_path("./tests/project_files")
+    File.expand_path("../public/tests", __FILE__)
   else
-    File.expand_path("./public/project_files")
+    File.expand_path("../public/project_files", __FILE__)
   end
 end
 
@@ -41,8 +52,11 @@ def valid_file_name?(name)
   end
 end
 
-def validate_credentials(username, password)
-  username == "admin" && password == "secret"
+def validate_credentials(users)
+  user = params[:username].to_s
+  password = params[:password].to_s
+
+  users.key?(user) && users[user] == password
 end
 
 configure do
@@ -66,7 +80,7 @@ end
 
 # render page for create a new document
 get "/new" do
-  if session[:username] == "admin"
+  if session[:username]
     erb :new, layout: :layout
   else
     session[:error] = "You must be signed in to do that."
@@ -95,8 +109,8 @@ post "/users/sign_in" do
   username = params[:username].to_s
   password = params[:password].to_s
 
-  if validate_credentials(username, password)
-    session[:signed_in] = "Signed in as admin."
+  if validate_credentials(load_users)
+    session[:signed_in] = "Signed in as #{username}."
     session[:username] = username
     redirect "/"
   else

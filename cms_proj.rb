@@ -4,6 +4,7 @@ require 'sinatra/content_for'
 require 'tilt/erubis'
 require 'redcarpet'
 require 'yaml'
+require 'bcrypt'
 
 # loads the list of valid users
 def load_users
@@ -52,11 +53,15 @@ def valid_file_name?(name)
   end
 end
 
-def validate_credentials(users)
-  user = params[:username].to_s
-  password = params[:password].to_s
+def validate_credentials(username, password)
+  users = load_users
 
-  users.key?(user) && users[user] == password
+  if users.key?(username)
+    secure_password = BCrypt::Password.new(users[username])
+    secure_password == password
+  else
+    false
+  end
 end
 
 configure do
@@ -106,10 +111,10 @@ end
 
 # signs the user in
 post "/users/sign_in" do
-  username = params[:username].to_s
-  password = params[:password].to_s
+  username = params[:username]
+  password = params[:password]
 
-  if validate_credentials(load_users)
+  if validate_credentials(username, password)
     session[:signed_in] = "Signed in as #{username}."
     session[:username] = username
     redirect "/"

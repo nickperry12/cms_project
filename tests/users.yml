@@ -1,5 +1,5 @@
 {
-  admin: secret,
-  nperry: gopatriots,
-  ryperry: ilovetommy
+  admin: $2a$12$0NIc3wnyqSD2E0m7lyIYQuoytiP2mtp7jrVaWAGkSq0qGx3HyT0RS,
+  nperry: $2a$12$VpuLHPnnb4Nerh52AV5JtuDIPDfSY8gdUXph3dvkw0TNy.8.KQovu,
+  ryperry: $2a$12$Bdw0q44GY7h7glR6tdnfKe0XDcg3xPSB6IiPsViadblGKQkYLn7Su
 }
